@@ -1,0 +1,44 @@
+<launch>
+
+  <arg name="model" default="$(find myturtle_description)/urdf/myturtle_base.urdf.xacro"/>
+  <arg name="gui" default="true" />
+  <arg name="rvizconfig" default="$(find myturtle_description)/rviz/urdf.rviz" />
+
+  <!-- <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+  <param name="use_gui" value="$(arg gui)"/>
+
+
+  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
+        args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find myturtle_gazebo)/param/mux.yaml" />
+    <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
+  </node> -->
+
+  <!-- load robot model -->
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+  <param name="use_gui" value="$(arg gui)"/>
+
+  <!-- <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
+        args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find myturtle_gazebo)/param/mux.yaml" />
+    <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
+  </node> -->
+  <node name="diff_controller" pkg="myturtle_gazebo" type="diff_controller.py">
+    <param name="base_frame_id" value="base_footprint"/>
+    <param name="base_width" value="0.2644"/>
+    <param name="ticks_meter" value="4100"/>
+    <param name="Kp" value="12"/>
+    <param name="Kd" value="12"/>
+    <param name="Ki" value="0"/>
+    <param name="Ko" value="50"/>
+    <param name="accel_limit" value="1.0"/>
+  </node>
+
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+  <!-- <include file="$(find myturtle_gazebo)/launch/include/myturtle_base.launch.xml"/> -->
+</launch>

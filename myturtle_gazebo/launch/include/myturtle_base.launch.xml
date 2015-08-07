@@ -1,0 +1,41 @@
+<launch>
+  <arg name="model" default="$(find myturtle_description)/urdf/myturtle_base.urdf.xacro"/>
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
+  <!-- <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen" clear_params="true">
+      <rosparam file="$(find rbx1_bringup)/config/fake_turtlebot_arbotix.yaml" command="load" />
+      <param name="sim" value="true"/>
+  </node> -->
+
+  <!-- The odometry estimator -->
+  <!-- <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+    <remap from="imu_data" to="mobile_base/sensors/imu_data"/>
+    <remap from="robot_pose_ekf/odom" to="odom_combined"/>
+    <param name="freq" value="10.0"/>
+    <param name="sensor_timeout" value="1.0"/>
+    <param name="publish_tf" value="true"/>
+    <param name="odom_used" value="true"/>
+    <param name="imu_used" value="true"/>
+    <param name="vo_used" value="false"/>
+    <param name="output_frame" value="odom"/>
+  </node> -->
+
+
+  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
+        args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find myturtle_gazebo)/param/cmd_vel_mux_minimal.yaml" />
+    <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
+  </node>
+  <!-- <node name="diff_controller" pkg="myturtle_gazebo" type="diff_controller.py">
+    <param name="base_frame_id" value="base_footprint"/>
+    <param name="base_width" value="0.2644"/>
+    <param name="ticks_meter" value="4100"/>
+    <param name="Kp" value="12"/>
+    <param name="Kd" value="12"/>
+    <param name="Ki" value="0"/>
+    <param name="Ko" value="50"/>
+    <param name="accel_limit" value="1.0"/>
+  </node> -->
+
+</launch>
